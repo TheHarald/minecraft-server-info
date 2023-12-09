@@ -25,103 +25,71 @@ const mcServerAPI = process.env.MC_SERVER_API ?? "";
 
 const bot = new TelegramBot(botToken, { polling: true });
 
-bot.on(
-  "message",
-  async (msg) => {
-    const chatId = msg.chat.id;
-    const messageText = msg.text ? msg.text : "";
+bot.on("message", async (msg) => {
+  const chatId = msg.chat.id;
+  const messageText = msg.text ? msg.text : "";
 
-    switch (messageText) {
-      case HELP_COMMAND: {
-        bot.sendMessage(chatId, HELP_MESSAGE);
-        break;
-      }
-      case START_COMMAND: {
-        bot.sendMessage(chatId, START_MESSAGE);
-        break;
-      }
+  switch (messageText) {
+    case HELP_COMMAND: {
+      bot.sendMessage(chatId, HELP_MESSAGE);
+      break;
+    }
+    case START_COMMAND: {
+      bot.sendMessage(chatId, START_MESSAGE);
+      break;
+    }
 
-      case PLAYERS_COMMAND: {
-        try {
-          const response: AxiosResponse<ResponseData> = await axios.get(
-            mcServerAPI
-          );
-          if (
-            response.data &&
-            response.data.players &&
-            response.data.players.now
-          ) {
-            const players = response.data.players;
-            bot.sendMessage(chatId, getPlayerInfoMessage(players));
-          } else {
-            bot.sendMessage(chatId, EMPTY_SERVER_MESSAGE);
-          }
-        } catch (error) {
-          bot.sendMessage(chatId, ERROR_MESSAGE);
-          console.error("Error:", error);
+    case PLAYERS_COMMAND: {
+      try {
+        const response: AxiosResponse<ResponseData> = await axios.get(
+          mcServerAPI
+        );
+        if (
+          response.data &&
+          response.data.players &&
+          response.data.players.now
+        ) {
+          const players = response.data.players;
+          bot.sendMessage(chatId, getPlayerInfoMessage(players));
+        } else {
+          bot.sendMessage(chatId, EMPTY_SERVER_MESSAGE);
         }
-        break;
+      } catch (error) {
+        bot.sendMessage(chatId, ERROR_MESSAGE);
+        console.error("Error:", error);
       }
+      break;
+    }
 
-      case SEX_COMMAND: {
-        try {
-          const response: AxiosResponse<ResponseData> = await axios.get(
-            mcServerAPI
-          );
-          if (
-            response.data &&
-            response.data.players &&
-            response.data.players.now
-          ) {
-            const players = response.data.players;
-            bot.sendMessage(chatId, getSexMessage(players));
-          } else {
-            bot.sendMessage(chatId, EMPTY_SERVER_MESSAGE);
-          }
-        } catch (error) {
-          bot.sendMessage(chatId, ERROR_MESSAGE);
-          console.error("Error:", error);
+    case SEX_COMMAND: {
+      try {
+        const response: AxiosResponse<ResponseData> = await axios.get(
+          mcServerAPI
+        );
+        if (
+          response.data &&
+          response.data.players &&
+          response.data.players.now
+        ) {
+          const players = response.data.players;
+          bot.sendMessage(chatId, getSexMessage(players));
+        } else {
+          bot.sendMessage(chatId, EMPTY_SERVER_MESSAGE);
         }
-        break;
+      } catch (error) {
+        bot.sendMessage(chatId, ERROR_MESSAGE);
+        console.error("Error:", error);
       }
+      break;
+    }
 
-      default: {
+    default: {
+      if (messageText[0] === "/")
         bot.sendMessage(chatId, UNKNOWN_COMMAND_MESSAGE);
-        break;
-      }
+      break;
     }
   }
-
-  //   if (messageText === "/start") {
-  //     bot.sendMessage(chatId, START_MESSAGE);
-  //   } else if (messageText === "/players") {
-  //     try {
-  //       const response: AxiosResponse<ResponseData> = await axios.get(
-  //         mcServerAPI
-  //       );
-  //       if (response.data && response.data.players && response.data.players.now) {
-  //         const playerCount = response.data.players.now;
-  //         bot.sendMessage(
-  //           chatId,
-  //           `There are currently ${playerCount} players online.`
-  //         );
-  //       } else {
-  //         bot.sendMessage(
-  //           chatId,
-  //           "Unable to retrieve player information at the moment."
-  //         );
-  //       }
-  //     } catch (error) {
-  //       bot.sendMessage(
-  //         chatId,
-  //         "Error occurred while fetching player information."
-  //       );
-  //       console.error("Error:", error);
-  //     }
-  //   } else {
-  //     bot.sendMessage(chatId, "I cannot understand this command.");
-  //   }
-);
+});
 
 const PORT = process.env.PORT || 3000;
 
